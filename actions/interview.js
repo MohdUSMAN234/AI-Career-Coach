@@ -73,19 +73,15 @@ export async function saveQuizResult(questions, answers, score) {
     userAnswer: answers[index],
     isCorrect: q.correctAnswer === answers[index],
     explanation: q.explanation,
-  }));
-
-  // Get wrong answers
+  }));  
   const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
 
-  // Only generate improvement tips if there are wrong answers
   let improvementTip = null;
   if (wrongAnswers.length > 0) {
     const wrongQuestionsText = wrongAnswers
       .map(
         (q) =>
-          `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
-      )
+          `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"` )
       .join("\n\n");
 
     const improvementPrompt = `
@@ -98,15 +94,12 @@ export async function saveQuizResult(questions, answers, score) {
       Keep the response under 2 sentences and make it encouraging.
       Don't explicitly mention the mistakes, instead focus on what to learn/practice.
     `;
-
     try {
       const tipResult = await model.generateContent(improvementPrompt);
-
       improvementTip = tipResult.response.text().trim();
       console.log(improvementTip);
     } catch (error) {
       console.error("Error generating improvement tip:", error);
-      // Continue without improvement tip if generation fails
     }
   }
 
@@ -117,9 +110,7 @@ export async function saveQuizResult(questions, answers, score) {
         quizScore: score,
         questions: questionResults,
         category: "Technical",
-        improvementTip,
-      },
-    });
+        improvementTip,}, });
 
     return assessment;
   } catch (error) {
@@ -137,7 +128,6 @@ export async function getAssessments() {
   });
 
   if (!user) throw new Error("User not found");
-
   try {
     const assessments = await db.assessment.findMany({
       where: {
